@@ -1,0 +1,294 @@
+{% extends "auctions/layout.html" %}
+
+
+{% block body %}
+  {% for listing in listings %}
+  
+
+      <div class="row g-0 justify-content-center">
+      
+      
+        <div class="col-md-12">
+          <img src="{{ listing.picture_url }}" class="card-img-top"/>
+        </div>
+        <div class="col-md-8 ">
+          <div class="col-sm " >
+            <div class="row my-3 align-items-center card-body">
+              <div class="col h1">{{ listing.item_name }}</div> 
+              <h6 class="col-auto h6">By: {{ listing.user }}</h6>           
+            </div>          
+            
+            {% if user.is_authenticated and listing.user.username == request.user.username %} 
+              <div class="d-grid gap-3  mx-auto my-2 h1 text-center">
+                <div class="text-success text-center"><strong>{{ listing.highest_bid }} kr </strong></div>
+                <h1>You can't bid on your listing. </h1>  
+              </div>        
+
+              <div class="card my-2">
+                <div class="p-2 mb- bg-secondary text-white">Item description</div>
+                <p class="card-text px-2 py-3">{{ listing.description }}</p>
+              </div>
+
+              <a href="{% url 'close_listing' listing.id %}" class="link-secondary h3">Close auctions</a>
+              
+              <div class="row row-cols-2 bg-secondary  text-white py-3 my-3"> 
+                <div class="col d-flex align-items-center"> Category</div>
+                <div class="col text-end  align-items-center">{{ listing.category }}</div>         
+                <div class="col text-center d-flex align-items-center">Date created</div>
+                <div class="col text-end "><small> {{ listing.datetime }} </small></div>
+              </div>
+
+            {% elif user.is_authenticated and user == listing.winner %}
+                <div class="display-1 text-center">Woohoo! You won  </div>
+
+              <div class="d-grid gap-3  mx-auto my-2 h1 text-center">
+                {% if listing.highest_bid > listing.starting_bid %}
+                  
+                  <div class="text-success text-center"><strong>{{ listing.highest_bid }} kr </strong></div>
+                                
+                  {% if messages %}
+                    <h2 class="messages ">
+                      {% for message in messages %}
+                      <div {% if message.SUCCES %} class="{{ message.SUCCES }} "{% endif %}>{{ message }}</div>
+                      {% endfor %}
+                    </h2>                          
+                  {% endif %}  
+
+                {% else %}
+                      
+                  <div class="text-success text-center"><strong>{{ listing.starting_bid }} kr </strong></div>
+                  
+                  {% if messages %}
+                    <h2 class="messages">
+                      {% for message in messages %}
+                      <div {% if message.ERROR %} class="{{ message.ERROR }} "{% endif %}>{{ message }}</div>
+                      {% endfor %}
+                    </h2>
+                  {% endif %}                    
+                {% endif %}                
+              </div>  
+
+              <div class="card my-2">
+                <div class="p-2 mb- bg-secondary text-white">Item description</div>
+                <p class="card-text px-2 py-3">{{ listing.description }}</p>
+              </div>
+              
+              <a href="{% url 'add_watchlist' listing.id %}" class="link-secondary h3">Add to watchlist</a>
+            
+              <div class="row row-cols-2 bg-secondary  text-white py-3 my-3"> 
+                <div class="col d-flex align-items-center">Category</div>
+                <div class="col text-end  align-items-center">{{ listing.category }}</div>         
+                <div class="col text-center d-flex align-items-center">Date created</div>
+                <div class="col text-end "><small> {{ listing.datetime }} </small></div>
+              </div>
+
+              {% with comments.count as total_comments %}
+                <h2>
+                  {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h2>
+              {% endwith %}
+
+              {% for comment in comments %}
+                <div class="comment ">
+                  <p class="info">
+                    Comment {{ forloop.counter }} by {{ comment.user }}
+                    {{ comment.created }}
+                  </p>
+                  {{ comment.text|linebreaks }}
+                </div>
+
+              {% empty %}
+                <p>There are no comments yet. </p>
+              {% endfor %}
+
+              {% if new_comment %}
+                <h2>Your comment has been added </h2>
+              {% else %}
+                <h2> Add a new comment </h2>
+                <form action="{% url 'listing' listing.id %}" method="POST">
+                  <p>{{ comment_form.as_p}}</p>
+                  {% csrf_token %}
+                  <input class="btn btn-primary " type="submit" value="Add comment">
+                </form>
+              {% endif %}
+            
+            {% elif  user.is_authenticated and listing.active == False  %}
+              <div class="display-3 text-center">This listing is closed. Good luck next time. </div>
+             
+              <div class="d-grid gap-3  mx-auto my-2 h1 text-center">
+                {% if listing.highest_bid > listing.starting_bid %}
+                  
+                  <div class="text-success text-center"><strong>{{ listing.highest_bid }} kr </strong></div>
+                                
+                  {% if messages %}
+                    <h2 class="messages ">
+                      {% for message in messages %}
+                      <div {% if message.SUCCES %} class="{{ message.SUCCES }} "{% endif %}> <strong>{{ message }}</strong></div>
+                      {% endfor %}
+                    </h2>                          
+                  {% endif %}  
+
+                {% else %}
+                      
+                  <div class="text-success text-center"><strong>{{ listing.starting_bid }} kr </strong></div>
+
+                    {% if messages %}
+                      <h2 class="messages ">
+                        {% for message in messages %}
+                          <div {% if message.ERROR %} class="{{ message.ERROR }} "{% endif %}><strong>{{ message }}</strong></div>  
+                        {% endfor %}
+                      </h2>
+                    {% endif %}
+                {% endif %}
+              </div>  
+
+              <div class="card my-2">
+                <div class="p-2 bg-info  text-white" >Item description</div>
+                <p class="card-text px-2 py-3">{{ listing.description }}</p>
+              </div>
+              
+              <a href="{% url 'add_watchlist' listing.id %}" class="link-secondary h3">Add to watchlist</a>
+            
+              <div class="row row-cols-2 bg-secondary  text-white py-3 my-3"> 
+                <div class="col d-flex align-items-center">Category</div>
+                <div class="col text-end  align-items-center">{{ listing.category }}</div>         
+                <div class="col text-center d-flex align-items-center">Date created</div>
+                <div class="col text-end "><small> {{ listing.datetime }} </small></div>
+              </div>
+
+              <div class="h1 mt-5 ">Comment section</div><hr>
+
+              {% with comments.count as total_comments %}
+                <h2>
+                  {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h2>
+              {% endwith %}
+
+              {% for comment in comments %}
+           
+                <div class="comment mt-4 text-right">
+                  <p class="info  ">
+                    Comment {{ forloop.counter }} by {{ comment.user }}
+                    {{ comment.created }}
+                  </p>
+                  {{ comment.text|linebreaks }}
+                </div>
+            
+              {% empty %}
+                <p>There are no comments yet. </p>
+              {% endfor %}
+
+              {% if new_comment %}
+                <h2>Your comment has been added </h2>
+              {% else %}
+                <h2> Add a new comment </h2>
+                <form class="text-center" action="{% url 'listing' listing.id %}" method="POST">
+                  <p>{{ comment_form.as_p}}</p>
+                  {% csrf_token %}
+                  <input class="btn btn-primary " type="submit" value="Add comment">
+                </form>
+              {% endif %}
+            
+            {% elif  user.is_authenticated  %}
+              <div class="d-grid gap-3  mx-auto my-2 h1 text-center">
+                {% if listing.highest_bid > listing.starting_bid %}
+                  
+                  <div class="text-success text-center"><strong>{{ listing.highest_bid }} kr </strong></div>
+                                
+                  {% if messages %}
+                    <h2 class="messages ">
+                      {% for message in messages %}
+                      <div {% if message.SUCCES %} class="{{ message.SUCCES }} "{% endif %}> <strong>{{ message }}</strong></div>
+                      {% endfor %}
+                    </h2>                          
+                  {% endif %}  
+
+                {% else %}
+                      
+                  <div class="text-success text-center"><strong>{{ listing.starting_bid }} kr </strong></div>
+
+                    {% if messages %}
+                      <h2 class="messages ">
+                        {% for message in messages %}
+                          <div {% if message.ERROR %} class="{{ message.ERROR }} "{% endif %}><strong>{{ message }}</strong></div>  
+                        {% endfor %}
+                      </h2>
+                    {% endif %}
+                    
+                {% endif %}
+
+                <form action="{% url 'listing' listing.id %}" method="POST">
+                  {% csrf_token %}                  
+                  {{ bid_form.as_p }}
+                  <input class="btn btn-danger btn-lg my-3 form-control" type="submit" name="bid" value="Place Bid">        
+                </form>
+              </div>  
+
+              <div class="card my-2">
+                <div class="p-2 bg-info  text-white" >Item description</div>
+                <p class="card-text px-2 py-3">{{ listing.description }}</p>
+              </div>
+              
+              <a href="{% url 'add_watchlist' listing.id %}" class="link-secondary h3">Add to watchlist</a>
+            
+              <div class="row row-cols-2 bg-secondary  text-white py-3 my-3"> 
+                <div class="col d-flex align-items-center">Category</div>
+                <div class="col text-end  align-items-center">{{ listing.category }}</div>         
+                <div class="col text-center d-flex align-items-center">Date created</div>
+                <div class="col text-end "><small> {{ listing.datetime }} </small></div>
+              </div>
+
+              <div class="h1 mt-5 ">Comment section</div><hr>
+
+              {% with comments.count as total_comments %}
+                <h2>
+                  {{ total_comments }} comment{{ total_comments|pluralize }}
+                </h2>
+              {% endwith %}
+
+              {% for comment in comments %}
+           
+                <div class="comment mt-4 text-right">
+                  <p class="info  ">
+                    Comment {{ forloop.counter }} by {{ comment.user }}
+                    {{ comment.created }}
+                  </p>
+                  {{ comment.text|linebreaks }}
+                </div>
+            
+              {% empty %}
+                <p>There are no comments yet. </p>
+              {% endfor %}
+
+              {% if new_comment %}
+                <h2>Your comment has been added </h2>
+              {% else %}
+                <h2> Add a new comment </h2>
+                <form class="text-center" action="{% url 'listing' listing.id %}" method="POST">
+                  <p>{{ comment_form.as_p}}</p>
+                  {% csrf_token %}
+                  <input class="btn btn-primary " type="submit" value="Add comment">
+                </form>
+              {% endif %}
+          
+
+            {% else %} 
+              <div class="d-grid gap-0  mx-auto my-1">
+                <a href="{% url 'login' %}" class="btn btn-danger btn-lg my-3 " type="button">Sign in to bid</a>
+              </div>
+              
+              <div class="row row-cols-2 bg-secondary  text-white py-3 my-3"> 
+                <div class="col d-flex align-items-center">Category</div>
+                <div class="col text-end  align-items-center">{{ listing.category }}</div>         
+                <div class="col text-center d-flex align-items-center">Date created</div>
+                <div class="col text-end "><small> {{ listing.datetime }} </small></div>
+              </div>          
+            {% endif %}
+            
+          
+          </div>
+        </div>
+      </div>
+   
+  {% endfor %}
+{% endblock %} 

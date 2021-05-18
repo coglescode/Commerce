@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    
+    
+    {% if categories %}
+        
+        <div class="h2 my-3 text-center"> Current active listings. </div>
+
+        {% for listing in categories %}
+        <div class="list-group">
+            <div class="card-body  align-items-center" style="max-width: 40rem;" >
+                <div class="row g-0 align-items-center " >
+                    <div class="col  ">
+                        <a href="{% url 'listing' listing.id %}">
+                            <img src="{{ listing.picture_url }}" class="img-fluid " alt="{{ listing.item_name }}" />
+                        </a>
+                    </div>
+                    <div class="col ">
+                        <div class="card-body">    
+                            <a class="h4" href="{% url 'listing' listing.id %}">{{ listing.item_name }} </a>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>    
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="h1 mt-5 text-center lh-base">Nothing here yet. Check for <a href="{% url 'index' %}">active listings.</a></div>
+    {% endif %}
+ 
+{% endblock %}

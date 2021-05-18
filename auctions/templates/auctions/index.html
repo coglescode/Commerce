@@ -1,0 +1,30 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% if listings %}
+     <h2 class="py-2">Active Listings</h2>
+    
+    
+        <div class="row g-0 ">
+            {% for listing in listings %}  
+                <div class="col-md-4 g-3" style="width: 19rem;">
+                    <div class="card card-sm-body my-4 "  >
+                        <a href="{{ listing.get_absolute_url }}"><img class="card-img-top"  src="{{ listing.picture_url }}"  alt="listing_object"></a>
+                        <div class="card-body">
+                            <a class="h3" href="{{ listing.get_absolute_url }}">{{ listing.item_name }}</a>
+                            <p class="card-text">{{ listing.description }}</p>
+                            <strong>{{ listing.starting_bid }} kr </strong>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    
+    {% else %}
+        <div class="col-12  d-flex flex-column justify-content-center " style="height: 500px;">
+            <div class="h1 text-center  "><a class="text-decoration-none" href="{% url 'login' %}"> Login </a> to create a listing.</div>
+        </div>
+    {% endif %}
+ 
+    
+{% endblock %}  

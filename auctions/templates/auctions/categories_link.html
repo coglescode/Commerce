@@ -1,0 +1,15 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <div class="h1 mb- text-center"> List of categories </div>
+
+  <div class="h1 list-group-flush">
+    <a href="{% url 'category_view' 'automotive'  %}" class="list-group-item list-group-item-action ">
+      Automotive
+    </a>
+    <a href="{% url 'category_view' 'fashion'  %}" class="list-group-item list-group-item-action">Fashion</a>
+    <a href="{% url 'category_view' 'electronics'  %}" class="list-group-item list-group-item-action">Electronics</a>
+    <a href="{% url 'category_view' 'shoes'  %}" class="list-group-item list-group-item-action">Shoes</a>    
+  </div>
+  
+{% endblock %} 

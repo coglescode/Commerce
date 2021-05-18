@@ -1,0 +1,8 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<form action="" method="post">{% csrf_token %}
+  <p>Are you sure you want to delete "{{ wl_item.wl_item_name }}"?</p>
+  <input type="submit" value="Confirm" /> <a href="{% url 'watchlist' %}">Cancel</a>
+</form>
+{% endblock %} 
